@@ -1,8 +1,6 @@
 #include <func.h>
 #include <asm-generic/socket.h>
 
-//未部署服务器，只能通过传输二进制文件的方式，给浏览器传输图片等文件
-
 int main(void)
 {
     //创建套接字
@@ -41,7 +39,6 @@ int main(void)
         socklen_t len = sizeof(clientAddr);
         int peerfd = accept(listenfd, (struct sockaddr*)&clientAddr, &len);
         printf("%s:%d has connected.\n",inet_ntoa(clientAddr.sin_addr),ntohs(clientAddr.sin_port));
-        
 
         //读取图片文件
         FILE *png_file = fopen("1.png","rb");
@@ -52,7 +49,7 @@ int main(void)
         //获取文件大小
         fseek(png_file, 0, SEEK_END);
         long filesize = ftell(png_file);
-        fseek(png_file, 0, SEEK_SET);
+        rewind(png_file); //fseek(png_file, 0, SEEK_SET);
 
         //读取文件内容
         char* png_file_buff = (char*)malloc(filesize);
