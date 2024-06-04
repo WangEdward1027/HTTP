@@ -81,12 +81,13 @@ int main(void)
         /* sprintf(buff, "%s%s%ld\r\n%s%s", startLine, headers, strlen(body), emptyLine, body); */
         sprintf(buff, "%s%s%ld\r\n%s", startLine, headers, filesize, emptyLine);
         printf("response:\r\n%s\n", buff);
-        
+
+        //HTTP协议要求响应头和响应体分开发送:
         //发送响应头
         ret = send(peerfd, buff, strlen(buff), 0);
         printf("\nsend %d bytes.\n", ret);
 
-        //发送图片内容:
+        //发送响应体:图片内容
         send(peerfd, png_file_buff, filesize, 0);
 
         free(png_file_buff);
