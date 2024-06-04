@@ -1,6 +1,8 @@
 #include <func.h>
 #include <asm-generic/socket.h>
 
+//http协议, 以二进制文件方式传输给客户端png图片
+
 int main(void)
 {
     //创建套接字
@@ -8,17 +10,17 @@ int main(void)
     if(listenfd == -1){
         error(1, errno, "socket");
     }
-    
+
     //填充网络地址
     struct sockaddr_in serveraddr;
     memset(&serveraddr, 0, sizeof(serveraddr));
     serveraddr.sin_family = AF_INET;
     serveraddr.sin_port = htons(8080);
     serveraddr.sin_addr.s_addr = inet_addr("192.168.248.136");
-    
+
     //设置网络地址可重用
-    int on = 1;
-    int ret = setsockopt(listenfd, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on));
+    int reuse = 1;
+    int ret = setsockopt(listenfd, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse));
     ERROR_CHECK(ret , 1 ,"setsockopt");
 
     //绑定IP地址和端口
@@ -45,7 +47,7 @@ int main(void)
         if(png_file == NULL){
             perror("fopen");
             exit(1);
-        }       
+        }
         //获取文件大小
         fseek(png_file, 0, SEEK_END);
         long filesize = ftell(png_file);
@@ -57,7 +59,7 @@ int main(void)
         fclose(png_file);
 
         //获取http请求报文
-        char buff[4096] = {0};    
+        char buff[4096] = {0};
         ret = recv(peerfd, buff, sizeof(buff), 0);    //buff用于存储从客户端接收的HTTP请求报文
         printf("ret: %d bytes.\n%s\n",ret, buff);
 
@@ -68,14 +70,14 @@ int main(void)
                 /* "Content-Type: text/html\r\n" */
                 "Content-Length: ";
         const char* emptyLine = "\r\n";
-        /* const char* body = */ 
+        /* const char* body = */
         /*     "<html>" */
         /*     "   <head>Test Image</head>" */
         /*     "   <body>" */
         /*             "<img src=\"1.png\" width=\"100%\">" */
         /*     "   </body>" */
         /*     "</html>"; */
-        
+
         //清空缓冲区
         memset(buff, 0 ,sizeof(buff));    //清空重用buff，存储要发送的响应头
         /* sprintf(buff, "%s%s%ld\r\n%s%s", startLine, headers, strlen(body), emptyLine, body); */
