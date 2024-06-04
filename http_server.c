@@ -52,12 +52,12 @@ int main(void)
         rewind(png_file); //fseek(png_file, 0, SEEK_SET);
 
         //读取文件内容
-        char* png_file_buff = (char*)malloc(filesize);
+        char* png_file_buff = (char*)malloc(filesize);    //png_file_buff存放响应体,即图片
         fread(png_file_buff, 1, filesize, png_file);
         fclose(png_file);
 
         //获取http请求报文
-        char buff[4096] = {0};
+        char buff[4096] = {0};    //buff存放响应头
         ret = recv(peerfd, buff, sizeof(buff), 0);
         printf("ret: %d bytes.\n%s\n",ret, buff);
 
@@ -82,7 +82,7 @@ int main(void)
         sprintf(buff, "%s%s%ld\r\n%s", startLine, headers, filesize, emptyLine);
         printf("response:\r\n%s\n", buff);
 
-        //HTTP协议要求响应头和响应体分开发送:
+        //响应头和响应体分开发送:
         //发送响应头
         ret = send(peerfd, buff, strlen(buff), 0);
         printf("\nsend %d bytes.\n", ret);
