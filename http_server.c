@@ -57,8 +57,8 @@ int main(void)
         fclose(png_file);
 
         //获取http请求报文
-        char buff[4096] = {0};    //buff存放响应头
-        ret = recv(peerfd, buff, sizeof(buff), 0);
+        char buff[4096] = {0};    
+        ret = recv(peerfd, buff, sizeof(buff), 0);    //buff用于存储从客户端接收的HTTP请求报文
         printf("ret: %d bytes.\n%s\n",ret, buff);
 
         //对请求报文进行响应操作
@@ -77,7 +77,7 @@ int main(void)
         /*     "</html>"; */
         
         //清空缓冲区
-        memset(buff, 0 ,sizeof(buff));
+        memset(buff, 0 ,sizeof(buff));    //清空重用buff，存储要发送的响应头
         /* sprintf(buff, "%s%s%ld\r\n%s%s", startLine, headers, strlen(body), emptyLine, body); */
         sprintf(buff, "%s%s%ld\r\n%s", startLine, headers, filesize, emptyLine);
         printf("response:\r\n%s\n", buff);
